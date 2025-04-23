@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <title>Loans</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600&display=swap"
+            rel="stylesheet"
+        />
+
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+            integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+            crossorigin="anonymous"
+        />
+
+        <style>
+            body {
+                background: transparent;
+            }
+            
+            .loader {
+                width: 35px;
+                aspect-ratio: 1;
+                border-radius: 50%;
+                background: 
+                    radial-gradient(farthest-side,#009F69 94%,#0000) top/5px 5px no-repeat,
+                    conic-gradient(#0000 30%,#009F69);
+                -webkit-mask: radial-gradient(farthest-side,#0000 calc(100% - 5px),#000 0);
+                animation: l13 1s infinite linear;
+            }
+            .loader.hide {
+                display: none;
+            }
+            @keyframes l13{ 
+                100%{transform: rotate(1turn)}
+            }
+            .loader-wrapper {
+                position: absolute;
+                left: 0;
+                right: 0;
+                top: 0;
+                bottom: 0;
+                display: flex;
+                align-items: center;
+                justify-content: center;                
+            }
+            .container {
+                display: none;
+            }
+            #response-output {
+                font-size: 20px;
+            }
+
+            .heading{
+                font-weight: 500;
+                color: #121617;
+                font-size: 16px;
+                line-height: 24px;
+            }
+
+            .insurance-card{
+                box-shadow: 0px 4px 8px 4px #1018281A;
+                background-color: #F6F6F6;
+                border-radius: 16px;
+                overflow: hidden;
+                margin: 40px 0 20px;
+            }
+            .p-16{
+                padding: 16px;
+            }
+            .card-title{
+                font-weight: 500;
+                color: #90CFB2;
+                font-size: 9px;
+                line-height: 14px;
+                margin-bottom: 8px;
+                text-transform: uppercase;
+                letter-spacing: 2;
+            }
+            .card-subtitle{
+                font-weight: 400;
+                color: #121617;
+                font-size: 12px;
+                line-height: 17px;
+            }
+            .insurance-card .footer{
+                text-align: center;
+                background-color: #fff;
+            }
+            .bordered-button{
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                padding: 10px 15px;
+                min-width: 130px;
+                border-radius: 32px;
+                color: #606060;
+                font-weight: 500;
+                background-color: #ffffff;
+                border: 1px solid #606060;
+            }
+            .card-wrapper{
+                position: relative;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div style="font-family: 'Roboto', sans-serif; padding: 20px 25px 25px" class="container">
+            <h5 class="text-center heading">Listing - Fetched from API</h5>
+            <div  class="card-container">
+            </div>
+        </div>
+        <div class="loader-wrapper">
+            <div class="loader"></div>
+        </div>
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script
+            src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"
+            integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF"
+            crossorigin="anonymous"
+        ></script>
+        <script>
+            function readyFn () {    
+                const hostUrl = window.hostUrl;
+                const token = window.token;
+
+                $.ajax({
+                    url: `${hostUrl}/api/ca/v1/self/user/policy?pageNumber=0&pageSize=200`,
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': token
+                    },
+                    success: function(response) {
+                        var str = '';
+                        response.forEach(function(insurance) {
+                          str += '<div class="card-wrapper">';
+                          str += '<div class="insurance-card">';
+                          str += '<div class="content p-16">';
+                          str += '<p class="card-title">'+insurance.policyType+'</p>';
+                          str += '<p class="card-subtitle">Insurer: '+insurance.insurer+'</p>';
+                          str += '<p class="card-subtitle">PolicyNo: '+insurance.policyNumber+'</p>';
+                          str += '</div>';
+                          str += '<div class="footer p-16">';
+                          str += '<button class="bordered-button" onClick={redirectOnClick("'+insurance.id+'")}>View Policy</button>';
+                          str += '</div>';
+                          str += '</div>';
+                          str += '</div>';
+                        });
+                        $('.card-container').html(str);
+                        $('.container').show();
+                        $('.loader-wrapper').hide();
+                    },
+                    error: function(xhr, status, error) {
+                        window.ReactNativeWebView.postMessage('{"type":"error"}');
+                    }
+                });
+            };
+
+            function redirectOnClick (policyId) {
+                window.ReactNativeWebView.postMessage('{"type":"redirect","goto":"insurance-details-pdp","extraParams":{"policyId":"'+policyId+'"}}');
+            }
+            
+        </script>
+    </body>
+</html>

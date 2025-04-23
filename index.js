@@ -1,15 +1,5 @@
-import React from 'react';
-import { View, Text } from 'react-native';
+import UserDetails from './html/user-details.html';
+import InsuranceDetails from './html/insurance-details.html';
+import InsuranceDetailsPdp from './html/insurance-details-pdp.html';
 
-
-export default class PocMf extends React.PureComponent {
-  render() {
-    return (
-      <View>
-      	<Text>
-      		PocMf
-      	</Text>
-      </View>
-    );
-  }
-}
+export default {"user-details": UserDetails, "insurance-details": InsuranceDetails, "insurance-details-pdp": InsuranceDetailsPdp}
